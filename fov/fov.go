@@ -46,7 +46,7 @@ func (v *View) Compute(grid GridMap, px, py, r int) {
 // fov does the actual work of detecting the visible tiles based on the recursive shadowcasting algorithm
 // annotations provided inline below for (hopefully) easier learning
 func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, oct, rad int) {
-	// If the current distance is greater than the radius provided, then this is the end of the line
+	// If the current distance is greater than the radius provided, then this is the end of the iteration
 	if dist > rad {
 		return
 	}
