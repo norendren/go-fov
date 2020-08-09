@@ -66,7 +66,7 @@ func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, 
 		if grid.InBounds(mapx, mapy) && distTo(px, py, mapx, mapy) < rad {
 			// As long as a tile is within the bounds of the map, if we visit it at all, it is considered visible
 			// That's the efficiency of shadowcasting, you just dont visit tiles that aren't visible
-			v.Visible[fmt.Sprintf("%d%d", mapx, mapy)] = struct{}{}
+			v.Visible[fmt.Sprintf("%d,%d", mapx, mapy)] = struct{}{}
 		}
 
 		if grid.InBounds(mapx, mapy) && !grid.IsOpaque(mapx, mapy) {
