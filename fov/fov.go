@@ -69,7 +69,7 @@ func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, 
 			v.Visible[fmt.Sprintf("%d,%d", mapx, mapy)] = struct{}{}
 		}
 
-		if grid.InBounds(mapx, mapy) && !grid.IsOpaque(mapx, mapy) {
+		if grid.InBounds(mapx, mapy) && grid.IsOpaque(mapx, mapy) {
 			if inGap {
 				// An opaque tile was discovered, so begin a recursive call
 				v.fov(grid, px, py, dist+1, lowSlope, (height-0.5)/float64(dist), oct, rad)
