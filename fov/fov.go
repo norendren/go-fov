@@ -22,25 +22,30 @@ type GridMap interface {
 // and nothing more than a set of keys is needed to store the range of visible cells
 type gridSet map[string]struct{}
 
-// MapFOV is the item which stores the visible set of cells any time it is called. This should be called any time
+// View is the item which stores the visible set of cells any time it is called. This should be called any time
 // a player's position is updated
-type MapFOV struct {
+type View struct {
 	Visible gridSet
 }
 
-// ComputeFOV takes a GridMap implementation along with the x and y coordinates representing a player's current
+// New returns a new instance of an fov calculator
+func New() *View {
+	return &View{}
+}
+
+// Compute takes a GridMap implementation along with the x and y coordinates representing a player's current
 // position and will internally update the visibile set of tiles within the provided radius `r`
-func (m *MapFOV) ComputeFOV(grid GridMap, px, py, r int) {
-	m.Visible = make(map[string]struct{})
-	m.Visible[fmt.Sprintf("%d%d", px, py)] = struct{}{}
+func (v *View) Compute(grid GridMap, px, py, r int) {
+	v.Visible = make(map[string]struct{})
+	v.Visible[fmt.Sprintf("%d%d", px, py)] = struct{}{}
 	for i := 1; i <= 8; i++ {
-		m.fov(grid, px, py, 1, 0, 1, i, r)
+		v.fov(grid, px, py, 1, 0, 1, i, r)
 	}
 }
 
 // fov does the actual work of detecting the visible tiles based on the recursive shadowcasting algorithm
 // annotations provided inline below for (hopefully) easier learning
-func (m *MapFOV) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, oct, rad int) {
+func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, oct, rad int) {
 	// If the current distance is greater than the radius provided, then this is the end of the line
 	if dist > rad {
 		return
@@ -61,13 +66,13 @@ func (m *MapFOV) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64
 		if grid.InBounds(mapx, mapy) && distTo(px, py, mapx, mapy) < rad {
 			// As long as a tile is within the bounds of the map, if we visit it at all, it is considered visible
 			// That's the efficiency of shadowcasting, you just dont visit tiles that aren't visible
-			m.Visible[fmt.Sprintf("%d%d", mapx, mapy)] = struct{}{}
+			v.Visible[fmt.Sprintf("%d%d", mapx, mapy)] = struct{}{}
 		}
 
 		if grid.InBounds(mapx, mapy) && !grid.IsOpaque(mapx, mapy) {
 			if inGap {
 				// An opaque tile was discovered, so begin a recursive call
-				m.fov(grid, px, py, dist+1, lowSlope, (height-0.5)/float64(dist), oct, rad)
+				v.fov(grid, px, py, dist+1, lowSlope, (height-0.5)/float64(dist), oct, rad)
 			}
 			// Any time a recursive call is made, adjust the minimum slope for all future calls within this octant
 			lowSlope = (height + 0.5) / float64(dist)
@@ -77,7 +82,7 @@ func (m *MapFOV) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64
 			// We've reached the end of the scan and, since the last tile in the scan was empty, begin
 			// another on the next depth up
 			if height == high {
-				m.fov(grid, px, py, dist+1, lowSlope, highSlope, oct, rad)
+				v.fov(grid, px, py, dist+1, lowSlope, highSlope, oct, rad)
 			}
 		}
 	}
@@ -85,8 +90,8 @@ func (m *MapFOV) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64
 
 // IsVisible takes in a set of x,y coordinates and will consult the visible set (as a gridSet) to determine
 // whether that tile is visible.
-func (m *MapFOV) IsVisible(x, y int) bool {
-	if _, ok := m.Visible[fmt.Sprintf("%d%d", x, y)]; !ok {
+func (v *View) IsVisible(x, y int) bool {
+	if _, ok := v.Visible[fmt.Sprintf("%d%d", x, y)]; !ok {
 		return false
 	}
 	return true
