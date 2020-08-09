@@ -37,7 +37,7 @@ func New() *View {
 // position and will internally update the visibile set of tiles within the provided radius `r`
 func (v *View) Compute(grid GridMap, px, py, r int) {
 	v.Visible = make(map[string]struct{})
-	v.Visible[fmt.Sprintf("%d%d", px, py)] = struct{}{}
+	v.Visible[fmt.Sprintf("%d,%d", px, py)] = struct{}{}
 	for i := 1; i <= 8; i++ {
 		v.fov(grid, px, py, 1, 0, 1, i, r)
 	}
@@ -91,7 +91,7 @@ func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, 
 // IsVisible takes in a set of x,y coordinates and will consult the visible set (as a gridSet) to determine
 // whether that tile is visible.
 func (v *View) IsVisible(x, y int) bool {
-	if _, ok := v.Visible[fmt.Sprintf("%d%d", x, y)]; !ok {
+	if _, ok := v.Visible[fmt.Sprintf("%d,%d", x, y)]; !ok {
 		return false
 	}
 	return true
