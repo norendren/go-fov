@@ -91,10 +91,10 @@ func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, 
 // IsVisible takes in a set of x,y coordinates and will consult the visible set (as a gridSet) to determine
 // whether that tile is visible.
 func (v *View) IsVisible(x, y int) bool {
-	if _, ok := v.Visible[fmt.Sprintf("%d,%d", x, y)]; !ok {
-		return false
+	if _, ok := v.Visible[fmt.Sprintf("%d,%d", x, y)]; ok {
+		return true
 	}
-	return true
+	return false
 }
 
 // distHeightXY performs some bitwise and operations to handle the transposition of the depth and height values
