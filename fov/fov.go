@@ -13,7 +13,6 @@ import (
 // GridMap is meant to represent the basic functionality that is required to detect the opaqueness
 // and boundaries of a 2D grid
 type GridMap interface {
-	Index(x, y int) (int, int)
 	InBounds(x, y int) bool
 	IsOpaque(x, y int) bool
 }
@@ -35,11 +34,11 @@ func New() *View {
 
 // Compute takes a GridMap implementation along with the x and y coordinates representing a player's current
 // position and will internally update the visibile set of tiles within the provided radius `r`
-func (v *View) Compute(grid GridMap, px, py, r int) {
+func (v *View) Compute(grid GridMap, px, py, radius int) {
 	v.Visible = make(map[string]struct{})
 	v.Visible[fmt.Sprintf("%d,%d", px, py)] = struct{}{}
 	for i := 1; i <= 8; i++ {
-		v.fov(grid, px, py, 1, 0, 1, i, r)
+		v.fov(grid, px, py, 1, 0, 1, i, radius)
 	}
 }
 
