@@ -1,10 +1,21 @@
 # go-fov
+
 go-fov is meant to provide an easy-to-implement and (relatively) unobstrusive way to quickly add field of view to a 
 top-down, grid-based game (it was made with traditional roguelikes in mind).
 
 go-fov uses recursive shadowcasting to track the cells which are considered "visible." For a much better explanation on
 the algorithm than I could ever provide, please see this [roguebasin article](http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting)
 or an absolutely wonderful technical explanation from [Gridbugs](https://gridbugs.org/visible-area-detection-recursive-shadowcast/)
+
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Quickstart](#quickstart)
+  * [Requirements](#requirements)
+  * [Example Implementation](#example-implementation)
+    * [Initialization](#initialization)
+    * [The "Update" Section](#the-update-section)
+    * [The "Draw" Section](#the-draw-section)
+* [Pictures](#pictures)
 
 ## Installation
 To use go-fov: 
@@ -151,8 +162,9 @@ Notice that, within the `IsVisible()` check, the current tile we're examining ha
 that gets set to true. Then, immediately after we draw all the visible cells to the screen, a secondary check for cells
 which are `Explored` *but not* `Visible` is made, and those are drawn in a different color.
 
-When it's all put together, here's how it ends up looking!
 ---
+
+## Pictures
 Visible only, no "Explored" tiles (the first code snippet)
 
 ![Visible-only FOV!](images/visible_shadowcast.gif)
