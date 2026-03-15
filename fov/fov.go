@@ -6,6 +6,7 @@ expected of any grid-based implementation
 package fov
 
 import (
+	"image"
 	"math"
 )
 
@@ -16,14 +17,9 @@ type GridMap interface {
 	IsOpaque(x, y int) bool
 }
 
-//point to hold a x, y position
-type point struct {
-	x, y int
-}
-
 // gridSet is an efficient and idiomatic way to implement sets in go, as an empty struct takes up no space
 // and nothing more than a set of keys is needed to store the range of visible cells
-type gridSet map[point]struct{}
+type gridSet map[image.Point]struct{}
 
 // View is the item which stores the visible set of cells any time it is called. This should be called any time
 // a player's position is updated
@@ -39,8 +35,8 @@ func New() *View {
 // Compute takes a GridMap implementation along with the x and y coordinates representing a player's current
 // position and will internally update the visibile set of tiles within the provided radius `r`
 func (v *View) Compute(grid GridMap, px, py, radius int) {
-	v.Visible = make(map[point]struct{})
-	v.Visible[point{px, py}] = struct{}{}
+	v.Visible = make(map[image.Point]struct{})
+	v.Visible[image.Point{px, py}] = struct{}{}
 	for i := 1; i <= 8; i++ {
 		v.fov(grid, px, py, 1, 0, 1, i, radius)
 	}
@@ -69,7 +65,7 @@ func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, 
 		if grid.InBounds(mapx, mapy) && distTo(px, py, mapx, mapy) < rad {
 			// As long as a tile is within the bounds of the map, if we visit it at all, it is considered visible
 			// That's the efficiency of shadowcasting, you just dont visit tiles that aren't visible
-			v.Visible[point{mapx, mapy}] = struct{}{}
+			v.Visible[image.Point{mapx, mapy}] = struct{}{}
 		}
 
 		if grid.InBounds(mapx, mapy) && grid.IsOpaque(mapx, mapy) {
@@ -94,7 +90,7 @@ func (v *View) fov(grid GridMap, px, py, dist int, lowSlope, highSlope float64, 
 // IsVisible takes in a set of x,y coordinates and will consult the visible set (as a gridSet) to determine
 // whether that tile is visible.
 func (v *View) IsVisible(x, y int) bool {
-	if _, ok := v.Visible[point{x, y}]; ok {
+	if _, ok := v.Visible[image.Point{x, y}]; ok {
 		return true
 	}
 	return false
